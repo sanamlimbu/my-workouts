@@ -4,4 +4,5 @@ export enum FirebaseErrorCode {
   UserNotFound = "auth/user-not-found",
   WrongPassword = "auth/wrong-password",
   TooManyRequests = "auth/too-many-requests",
+  PermissionDenied = "permission-denied",
 }

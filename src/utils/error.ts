@@ -17,8 +17,10 @@ export function getFirebaseErrorMessage(code: FirebaseErrorCode) {
     case FirebaseErrorCode.TooManyRequests: {
       return "Too many requests, please try later.";
     }
-
+    case FirebaseErrorCode.PermissionDenied: {
+      return "Permission denied.";
+    }
     default:
-      return "Something went wrong, please try again.";
+      return "Something went wrong.";
   }
 }

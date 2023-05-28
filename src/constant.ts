@@ -1,12 +1,3 @@
-export const WorkoutTypes = [
-  "Back",
-  "Biceps",
-  "Chest",
-  "Legs",
-  "Shoulder",
-  "Triceps",
-];
-
 export const ChestWorkouts = [
   "Bench Press",
   "Inclined Bench Press",

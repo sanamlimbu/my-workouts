@@ -1,4 +1,5 @@
 import { User } from "firebase/auth";
+import { Timestamp } from "firebase/firestore";
 
 /**
  * Retrieves the user information from localStorage.
@@ -6,18 +7,20 @@ import { User } from "firebase/auth";
  */
 export function getUserFromLocalStorage(): User | null {
   try {
-    const userString: string | null = localStorage.getItem(
-      "my_workouts_firebase_auth_user"
+    const userKey = Object.keys(window.localStorage).find((key) =>
+      key.startsWith("firebase:authUser")
     );
-    if (userString === null) {
-      return null;
+    if (userKey) {
+      const userString: string | null = localStorage.getItem(userKey);
+      if (userString) {
+        const currentUser: User = JSON.parse(userString);
+        return currentUser;
+      }
     }
-    const currentUser: User = JSON.parse(userString);
-    return currentUser;
   } catch (error) {
     console.error("Error retrieving user from localStorage:", error);
-    return null;
   }
+  return null;
 }
 
 /**
@@ -67,4 +70,14 @@ export function validatePassword(password: string): string {
   }
 
   return "";
+}
+
+/**
+ * Checks if a given expiration time has passed or is in the future compared to the current timestamp.
+ * @param expirationTime - The expiration time as a Firebase Firestore Timestamp object.
+ * @returns `true` if the expiration time has passed, `false` if it is in the future.
+ */
+export function isTokenExpired(expirationTime: Timestamp) {
+  const currentTimestamp = Timestamp.now();
+  return expirationTime.toMillis() < currentTimestamp.toMillis();
 }

@@ -2,8 +2,8 @@ import { initializeApp } from "firebase/app";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
+  browserLocalPersistence,
   browserPopupRedirectResolver,
-  browserSessionPersistence,
   initializeAuth,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -20,7 +20,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = initializeAuth(app, {
-  persistence: browserSessionPersistence,
+  persistence: browserLocalPersistence,
   popupRedirectResolver: browserPopupRedirectResolver,
 });
 export const db = getFirestore(app);
