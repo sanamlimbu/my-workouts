@@ -37,16 +37,7 @@ interface IFormInput {
   reps: number;
   weight: number;
 }
-function createData(set: number, reps: number) {
-  return { set, reps };
-}
 
-const rows = [
-  createData(1, 12),
-  createData(2, 11),
-  createData(3, 10),
-  createData(4, 8),
-];
 export default function CurrentWorkoutSession() {
   const [workoutType, setWorkoutType] = useState(WorkoutType.Chest);
   const { currentWorkoutSession, setCurrentWorkoutSession } = useContext(
