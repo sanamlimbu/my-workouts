@@ -5,4 +5,5 @@ export enum FirebaseErrorCode {
   WrongPassword = "auth/wrong-password",
   TooManyRequests = "auth/too-many-requests",
   PermissionDenied = "permission-denied",
+  InvalidArgument = "invalid-argument",
 }

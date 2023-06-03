@@ -20,6 +20,9 @@ export function getFirebaseErrorMessage(code: FirebaseErrorCode) {
     case FirebaseErrorCode.PermissionDenied: {
       return "Permission denied.";
     }
+    case FirebaseErrorCode.InvalidArgument: {
+      return "Invalid argument.";
+    }
     default:
       return "Something went wrong.";
   }

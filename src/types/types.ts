@@ -1,16 +1,16 @@
-import { DocumentData } from "firebase/firestore";
+import { DocumentData, Timestamp } from "firebase/firestore";
 
 export interface WorkoutSession extends DocumentData {
   userId: string;
-  createdAt: Date;
-  completedAt?: Date;
+  createdAt: Timestamp;
+  completedAt?: Timestamp;
   workouts: Workout[];
 }
 
 export interface Workout {
+  id: string;
   type: string;
   name: string;
-  set: number;
   weight: number;
   reps: number;
 }

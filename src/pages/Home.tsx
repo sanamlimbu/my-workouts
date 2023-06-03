@@ -1,10 +1,11 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Avatar, Box, Button, Typography } from "@mui/material";
 import red from "@mui/material/colors/red";
 import { useContext, useState } from "react";
 
 import { signOut } from "firebase/auth";
 import { createWorkoutSession } from "../api/firebase";
 import CurrentWorkoutSession from "../components/currentWorkoutSession";
+import PreviousWorkoutSessions from "../components/previousWorkoutSessions";
 import { AuthContext } from "../context/AuthContext";
 import { CurrentWorkoutSessionContext } from "../context/CurrentWorkoutSessionContext";
 import { auth } from "../firebase";
@@ -30,7 +31,9 @@ interface IFormInput {
 
 export default function HomePage() {
   const { currentUser, dispatch } = useContext(AuthContext);
-  const { currentWorkoutSession } = useContext(CurrentWorkoutSessionContext);
+  const { currentWorkoutSession, setCurrentWorkoutSession } = useContext(
+    CurrentWorkoutSessionContext
+  );
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleLogout = async () => {
@@ -45,7 +48,8 @@ export default function HomePage() {
   const handleCreateWorkoutSession = async () => {
     try {
       if (currentUser) {
-        const docId = await createWorkoutSession(currentUser.uid);
+        const docSnap = await createWorkoutSession(currentUser.uid);
+        setCurrentWorkoutSession(docSnap);
       }
     } catch (error: any) {
       setErrorMessage(getFirebaseErrorMessage(error.code));
@@ -54,33 +58,50 @@ export default function HomePage() {
 
   return (
     <Box sx={{ padding: "1em" }}>
-      <Typography
-        variant="h3"
-        sx={{
-          background: "linear-gradient(to right, #007FFF, #0059B2)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          fontWeight: "bold",
-        }}
-      >
-        Sanam's workouts
-      </Typography>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Button
-          variant="contained"
-          sx={{ textTransform: "none", fontWeight: "bold" }}
-          onClick={handleLogout}
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: "0.5em",
+            alignItems: "center",
+          }}
         >
-          {" "}
-          Log out
-        </Button>
-        {errorMessage && (
-          <Typography color={red[500]} marginLeft={"1em"} fontSize={"medium"}>
-            {errorMessage}
+          {currentUser && currentUser.photoURL ? (
+            <Avatar src={currentUser.photoURL} />
+          ) : (
+            <Avatar />
+          )}
+          <Typography
+            sx={{
+              background: "linear-gradient(to right, #007FFF, #0059B2)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              fontWeight: "bold",
+            }}
+          >
+            {currentUser?.displayName}
           </Typography>
-        )}
+        </Box>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Button
+            variant="contained"
+            sx={{ textTransform: "none", fontWeight: "bold" }}
+            onClick={handleLogout}
+          >
+            {" "}
+            Log out
+          </Button>
+          {errorMessage && (
+            <Typography color={red[500]} marginLeft={"1em"} fontSize={"medium"}>
+              {errorMessage}
+            </Typography>
+          )}
+        </Box>
       </Box>
-      {!currentWorkoutSession && (
+
+      {currentWorkoutSession ? (
+        <CurrentWorkoutSession />
+      ) : (
         <Box marginTop={"1em"}>
           <Button
             variant="contained"
@@ -95,7 +116,7 @@ export default function HomePage() {
           </Typography>
         </Box>
       )}
-      <CurrentWorkoutSession />
+      <PreviousWorkoutSessions />
     </Box>
   );
 }

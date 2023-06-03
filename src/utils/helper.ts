@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 import {
   BackWorkouts,
   BicepWorkouts,
@@ -70,4 +71,96 @@ export function groupWorkoutsByName(workouts: Workout[]): {
   });
 
   return groupedWorkouts;
+}
+
+/**
+ * Retrieves unique workout types from an array of workouts.
+ * @param workouts An array of workouts.
+ * @returns A Set containing unique workout types.
+ */
+export function getWorkoutTypes(workouts: Workout[]): Set<string> {
+  const workoutTypes = new Set<string>();
+  workouts.map((workout) => {
+    workoutTypes.add(workout.type);
+  });
+  return workoutTypes;
+}
+
+/**
+ * Converts a Firestore timestamp object to a string representation.
+ * @param timestamp The Firestore timestamp object to convert.
+ * @returns The string representation of the timestamp.
+ */
+export function convertFirestoreTimestampToString(
+  timestamp: Timestamp
+): string {
+  const date = new Date(
+    timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+  );
+
+  const dayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+
+  const dayName = dayNames[date.getDay()];
+  const day = date.getDate();
+  const monthIndex = date.getMonth();
+  const year = date.getFullYear();
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const formattedDate = `${dayName}, ${day} ${monthNames[monthIndex]} ${year}`;
+
+  return formattedDate;
+}
+
+/**
+ * Calculates the duration between a start and finish timestamp and returns the duration in the format "H hours M minutes".
+ * @param startTimestamp The start timestamp.
+ * @param finishTimestamp The finish timestamp.
+ * @returns The duration between the timestamps in the format "H hours M minutes".
+ */
+export function calculateWorkoutDuration(
+  startTimestamp: Timestamp,
+  finishTimestamp: Timestamp
+): string {
+  const durationInMillis =
+    finishTimestamp.seconds * 1000 +
+    finishTimestamp.nanoseconds / 1000000 -
+    (startTimestamp.seconds * 1000 + startTimestamp.nanoseconds / 1000000);
+
+  // Calculate the duration in minutes
+  const durationInMinutes = Math.floor(durationInMillis / (1000 * 60));
+
+  if (durationInMinutes < 60) {
+    return `${durationInMinutes} mins`;
+  }
+
+  // Calculate the hours and minutes from the duration in minutes
+  const hours = Math.floor(durationInMinutes / 60);
+  const minutes = durationInMinutes % 60;
+
+  const formattedDuration =
+    hours > 1 ? `${hours} hrs ${minutes} mins` : `${hours} hr ${minutes} mins`;
+
+  return formattedDuration;
 }

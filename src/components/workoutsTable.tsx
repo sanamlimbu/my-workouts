@@ -17,7 +17,7 @@ export default function WorkoutsTable(props: {
 }) {
   const { name, workouts } = props;
   return (
-    <Box>
+    <Box maxWidth="12em">
       <Typography
         fontWeight="bold"
         sx={{
@@ -29,30 +29,26 @@ export default function WorkoutsTable(props: {
       >
         {name}
       </Typography>
-      <TableContainer component={Paper} sx={{ minWidth: "12em" }}>
+      <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>Set</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Reps</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>KG</TableCell>
               <TableCell align="right" sx={{ fontWeight: "bold" }}>
-                Weight
+                Reps
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {workouts.map((workout) => (
               <TableRow
-                key={workout.set}
+                key={workout.id}
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}
               >
-                <TableCell component="th" scope="row">
-                  {workout.set}
-                </TableCell>
-                <TableCell>{workout.reps}</TableCell>
-                <TableCell align="right">{workout.weight}</TableCell>
+                <TableCell>{workout.weight}</TableCell>
+                <TableCell align="right">{workout.reps}</TableCell>
               </TableRow>
             ))}
           </TableBody>

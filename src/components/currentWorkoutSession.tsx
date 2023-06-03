@@ -13,7 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import red from "@mui/material/colors/red";
-
 import {
   QueryDocumentSnapshot,
   arrayUnion,
@@ -23,8 +22,9 @@ import {
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { fetchCurrentWorkoutSessionQueryDocSnapshot } from "../api/firebase";
-import { AuthContext } from "../context/AuthContext";
+import { v4 as uuidv4 } from "uuid";
+import { endWorkoutSession } from "../api/firebase";
+import { CurrentWorkoutSessionContext } from "../context/CurrentWorkoutSessionContext";
 import { db } from "../firebase";
 import { WorkoutSession, WorkoutType } from "../types/types";
 import { getFirebaseErrorMessage } from "../utils/error";
@@ -34,7 +34,6 @@ import WorkoutsTable from "./workoutsTable";
 interface IFormInput {
   type: WorkoutType;
   name: string;
-  set: number;
   reps: number;
   weight: number;
 }
@@ -49,19 +48,16 @@ const rows = [
   createData(4, 8),
 ];
 export default function CurrentWorkoutSession() {
-  const { currentUser } = useContext(AuthContext);
   const [workoutType, setWorkoutType] = useState(WorkoutType.Chest);
-  const [
-    currentWorkoutSessionQueryDocSnapshot,
-    setCurrentWorkoutSessionQueryDocSnapshot,
-  ] = useState<QueryDocumentSnapshot<WorkoutSession>>();
+  const { currentWorkoutSession, setCurrentWorkoutSession } = useContext(
+    CurrentWorkoutSessionContext
+  );
   const [errorMessage, setErrorMessage] = useState("");
   const [openModal, setOpenModal] = useState(false);
 
   const { control, handleSubmit, register, reset } = useForm({
     defaultValues: {
       type: workoutType,
-      set: 1,
       reps: 12,
       weight: 20,
       name: getWorkoutsByType(workoutType)[0],
@@ -69,46 +65,29 @@ export default function CurrentWorkoutSession() {
   });
 
   useEffect(() => {
-    (async () => {
-      try {
-        if (currentUser) {
-          const workoutSessionQueryDocSnapshot: QueryDocumentSnapshot<WorkoutSession> =
-            await fetchCurrentWorkoutSessionQueryDocSnapshot(currentUser.uid);
-          setCurrentWorkoutSessionQueryDocSnapshot(
-            workoutSessionQueryDocSnapshot
-          );
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
     reset({
       type: workoutType,
       name: getWorkoutsByType(workoutType)[0],
-      set: 1,
       reps: 12,
       weight: 20,
     });
   }, [workoutType]);
 
-  const groupedWorkouts = currentWorkoutSessionQueryDocSnapshot
-    ? groupWorkoutsByName(currentWorkoutSessionQueryDocSnapshot.data().workouts)
+  const groupedWorkouts = currentWorkoutSession
+    ? groupWorkoutsByName(currentWorkoutSession.data().workouts)
     : null;
 
   const onSubmit: SubmitHandler<IFormInput> = async (data: IFormInput) => {
     try {
-      if (currentWorkoutSessionQueryDocSnapshot) {
+      if (currentWorkoutSession) {
         const workoutSessionRef = doc(
           db,
           "workoutSessions",
-          currentWorkoutSessionQueryDocSnapshot.id
+          currentWorkoutSession.id
         );
         const newWorkout = {
+          id: uuidv4(),
           type: data.type,
-          set: data.set,
           reps: data.reps,
           weight: data.weight,
           name: data.name,
@@ -120,7 +99,7 @@ export default function CurrentWorkoutSession() {
 
         const updatedDocSnapshot = await getDoc(workoutSessionRef);
         if (updatedDocSnapshot.exists()) {
-          setCurrentWorkoutSessionQueryDocSnapshot(
+          setCurrentWorkoutSession(
             updatedDocSnapshot as QueryDocumentSnapshot<WorkoutSession>
           );
         }
@@ -134,29 +113,42 @@ export default function CurrentWorkoutSession() {
     setOpenModal(false);
   };
 
-  const handleEndSession = () => {
+  const handleEndSession = async () => {
     try {
-    } catch (error: any) {}
+      if (currentWorkoutSession) {
+        await endWorkoutSession(currentWorkoutSession?.id);
+        setOpenModal(false);
+        setCurrentWorkoutSession(undefined);
+      }
+    } catch (error: any) {
+      console.log(error.code);
+    }
   };
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ marginTop: "1em", fontWeight: "bold" }}>
+      <Typography
+        variant="h6"
+        sx={{
+          marginTop: "1em",
+          fontWeight: "bold",
+          background: "linear-gradient(to right, #007FFF, #0059B2)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
         Current session
       </Typography>
       <Box
         sx={{
           padding: "1em",
           background: "rgb(225,228,230)",
-          display: "flex",
-          gap: "1em",
-          flexWrap: "wrap",
           borderRadius: "12px",
         }}
       >
-        <Box maxWidth={"30em"}>
+        <Box>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div style={{ display: "flex", gap: "1em" }}>
+            <div style={{ display: "flex", gap: "1em", flexWrap: "wrap" }}>
               <div>
                 <Typography fontWeight={"bold"}>Type</Typography>
                 <FormControl fullWidth {...register("type")}>
@@ -200,17 +192,13 @@ export default function CurrentWorkoutSession() {
                   />
                 </FormControl>
               </div>
-              <div>
-                <Typography fontWeight={"bold"}>Set</Typography>
-                <TextField fullWidth size="small" {...register("set")} />
-              </div>
-              <div>
+              <div style={{ maxWidth: "8em" }}>
                 <Typography fontWeight={"bold"}>Reps</Typography>
-                <TextField fullWidth size="small" {...register("reps")} />
+                <TextField size="small" {...register("reps")} />
               </div>
-              <div>
-                <Typography fontWeight={"bold"}>Weight</Typography>
-                <TextField fullWidth size="small" {...register("weight")} />
+              <div style={{ maxWidth: "8em" }}>
+                <Typography fontWeight={"bold"}>KG</Typography>
+                <TextField size="small" {...register("weight")} />
               </div>
             </div>
             <div style={{ marginTop: "1em", display: "flex", gap: "1em" }}>
@@ -234,10 +222,21 @@ export default function CurrentWorkoutSession() {
             </div>
           </form>
         </Box>
-        {groupedWorkouts &&
-          Object.entries(groupedWorkouts).map(([key, value]) => (
-            <WorkoutsTable key={key} name={key} workouts={value} />
-          ))}
+        <Box
+          sx={{
+            display: "flex",
+            gap: "1em",
+            flexWrap: "wrap",
+            marginTop: "1em",
+            marginBottom: "1em",
+          }}
+        >
+          {groupedWorkouts &&
+            Object.entries(groupedWorkouts).map(([key, value]) => (
+              <WorkoutsTable key={key} name={key} workouts={value} />
+            ))}
+        </Box>
+
         <Box>
           <Button
             variant="contained"
