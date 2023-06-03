@@ -11,24 +11,6 @@ import { CurrentWorkoutSessionContext } from "../context/CurrentWorkoutSessionCo
 import { auth } from "../firebase";
 import { getFirebaseErrorMessage } from "../utils/error";
 
-function createData(set: number, reps: number) {
-  return { set, reps };
-}
-
-const rows = [
-  createData(1, 12),
-  createData(2, 11),
-  createData(3, 10),
-  createData(4, 8),
-];
-
-interface IFormInput {
-  workoutType: string;
-  workout: string;
-  set: number;
-  reps: number;
-}
-
 export default function HomePage() {
   const { currentUser, dispatch } = useContext(AuthContext);
   const { currentWorkoutSession, setCurrentWorkoutSession } = useContext(
