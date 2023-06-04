@@ -2,6 +2,7 @@ import {
   QueryDocumentSnapshot,
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -120,6 +121,23 @@ export const endWorkoutSession = async (sessionId: string): Promise<void> => {
     await updateDoc(workoutSessionRef, {
       completedAt: serverTimestamp(),
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Deletes a workout session in Firestore.
+ * @param sessionId The ID of the workout session to end.
+ * @returns A promise that resolves when the workout session is successfully deleted.
+ * @throws If an error occurs during the deletion.
+ */
+export const deleteWorkoutSession = async (
+  sessionId: string
+): Promise<void> => {
+  try {
+    const workoutSessionRef = doc(db, "workoutSessions", sessionId);
+    await deleteDoc(workoutSessionRef);
   } catch (error) {
     throw error;
   }
