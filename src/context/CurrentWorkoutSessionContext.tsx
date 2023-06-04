@@ -1,6 +1,7 @@
 import { QueryDocumentSnapshot } from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { fetchCurrentWorkoutSessionQueryDocSnapshot } from "../api/firebase";
+import Loading from "../components/loading";
 import { WorkoutSession } from "../types/types";
 import { AuthContext } from "./AuthContext";
 
@@ -21,22 +22,22 @@ const CurrentWorkoutSessionProvider = (props: {
   const [currentWorkoutSession, setCurrentWorkoutSession] =
     useState<QueryDocumentSnapshot<WorkoutSession>>();
   const { currentUser } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Fetch the current workout session from Firebase
-    const fetchData = async () => {
+    (async () => {
       try {
         if (currentUser) {
           const workoutSessionQueryDocSnapshot =
             await fetchCurrentWorkoutSessionQueryDocSnapshot(currentUser.uid);
           setCurrentWorkoutSession(workoutSessionQueryDocSnapshot);
+          setIsLoading(false);
         }
       } catch (error: any) {
-        console.error("Error fetching current workout session:", error);
+        setIsLoading(false);
       }
-    };
-
-    fetchData();
+    })();
   }, []);
 
   return (
@@ -46,7 +47,7 @@ const CurrentWorkoutSessionProvider = (props: {
         setCurrentWorkoutSession,
       }}
     >
-      {props.children}
+      {isLoading ? <Loading /> : props.children}
     </CurrentWorkoutSessionContext.Provider>
   );
 };
