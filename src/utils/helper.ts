@@ -112,6 +112,10 @@ export function convertFirestoreTimestampToString(
   const day = date.getDate();
   const monthIndex = date.getMonth();
   const year = date.getFullYear();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const period = hours >= 12 ? "pm" : "am";
+  const formattedHours = hours % 12 || 12;
 
   const monthNames = [
     "January",
@@ -128,7 +132,11 @@ export function convertFirestoreTimestampToString(
     "December",
   ];
 
-  const formattedDate = `${dayName}, ${day} ${monthNames[monthIndex]} ${year}`;
+  const formattedDate = `${formattedHours}:${minutes
+    .toString()
+    .padStart(2, "0")} ${period} - ${dayName}, ${day} ${
+    monthNames[monthIndex]
+  } ${year}`;
 
   return formattedDate;
 }
