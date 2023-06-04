@@ -24,19 +24,15 @@ const CurrentWorkoutSessionProvider = (props: {
 
   useEffect(() => {
     // Fetch the current workout session from Firebase
-    const fetchData = async () => {
+    (async () => {
       try {
         if (currentUser) {
           const workoutSessionQueryDocSnapshot =
             await fetchCurrentWorkoutSessionQueryDocSnapshot(currentUser.uid);
           setCurrentWorkoutSession(workoutSessionQueryDocSnapshot);
         }
-      } catch (error: any) {
-        console.error("Error fetching current workout session:", error);
-      }
-    };
-
-    fetchData();
+      } catch (error: any) {}
+    })();
   }, []);
 
   return (
