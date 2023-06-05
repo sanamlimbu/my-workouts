@@ -1,5 +1,7 @@
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -9,13 +11,37 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { useContext } from "react";
+import {
+  deleteWorkoutFromSession,
+  fetchCurrentWorkoutSessionQueryDocSnapshot,
+} from "../api/firebase";
+import { AuthContext } from "../context/AuthContext";
+import { CurrentWorkoutSessionContext } from "../context/CurrentWorkoutSessionContext";
 import { Workout } from "../types/types";
-
 export default function WorkoutsTable(props: {
   name: string;
   workouts: Workout[];
+  deletableRow?: boolean;
 }) {
-  const { name, workouts } = props;
+  const { name, workouts, deletableRow } = props;
+  const { currentWorkoutSession, setCurrentWorkoutSession } = useContext(
+    CurrentWorkoutSessionContext
+  );
+  const { currentUser } = useContext(AuthContext);
+
+  const handleDelete = async (workoutId: string) => {
+    try {
+      if (currentWorkoutSession && currentUser) {
+        await deleteWorkoutFromSession(currentWorkoutSession.id, workoutId);
+        const _currentWorkoutSession =
+          await fetchCurrentWorkoutSessionQueryDocSnapshot(currentUser.uid);
+        setCurrentWorkoutSession(_currentWorkoutSession);
+      }
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
   return (
     <Box maxWidth="12em">
       <Typography
@@ -33,10 +59,18 @@ export default function WorkoutsTable(props: {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>KG</TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold" }}>
+              <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                KG
+              </TableCell>
+              <TableCell align="center" sx={{ fontWeight: "bold" }}>
                 Reps
               </TableCell>
+              {deletableRow && (
+                <TableCell
+                  align="center"
+                  sx={{ fontWeight: "bold" }}
+                ></TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -47,8 +81,18 @@ export default function WorkoutsTable(props: {
                   "&:last-child td, &:last-child th": { border: 0 },
                 }}
               >
-                <TableCell>{workout.weight}</TableCell>
-                <TableCell align="right">{workout.reps}</TableCell>
+                <TableCell align="center">{workout.weight}</TableCell>
+                <TableCell align="center">{workout.reps}</TableCell>
+                {deletableRow && (
+                  <TableCell align="center">
+                    <IconButton
+                      color="error"
+                      onClick={() => handleDelete(workout.id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

@@ -36,13 +36,15 @@ export default function WorkoutSessionSection(props: {
       <Typography
         sx={{
           fontWeight: "bold",
+          marginBottom: "0.5em",
         }}
       >
         {createdAt &&
           completedAt &&
           calculateWorkoutDuration(createdAt, completedAt)}
+        {" - "}
+        {Array.from(workoutTypes).join(", ")}
       </Typography>
-      <Typography>{Array.from(workoutTypes).join(", ")}</Typography>
       <Box sx={{ display: "flex", gap: "1em", flexWrap: "wrap" }}>
         {groupedWorkouts &&
           Object.entries(groupedWorkouts).map(([key, value]) => (
