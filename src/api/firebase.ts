@@ -14,7 +14,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { WorkoutSession } from "../types/types";
+import { Workout, WorkoutSession } from "../types/types";
 
 /**
  * Fetches the current workout session document for a given user ID.
@@ -138,6 +138,44 @@ export const deleteWorkoutSession = async (
   try {
     const workoutSessionRef = doc(db, "workoutSessions", sessionId);
     await deleteDoc(workoutSessionRef);
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Deletes a workout from a workout session.
+ * @param {string} sessionId - The ID of the workout session.
+ * @param {string} workoutId - The ID of the workout to delete.
+ * @returns {Promise<void>} - A Promise that resolves when the deletion is successful.
+ */
+export const deleteWorkoutFromSession = async (
+  sessionId: string,
+  workoutId: string
+): Promise<void> => {
+  try {
+    const workoutSessionRef = doc(db, "workoutSessions", sessionId);
+    const workoutSessionDoc = await getDoc(workoutSessionRef);
+
+    if (!workoutSessionDoc.exists()) {
+      throw new Error("Workout session does not exist");
+    }
+
+    const { workouts } = workoutSessionDoc.data();
+    const workoutIndex = workouts.findIndex(
+      (workout: Workout) => workout.id === workoutId
+    );
+
+    if (workoutIndex === -1) {
+      throw new Error("Workout does not exist in the session");
+    }
+
+    const updatedWorkouts = [...workouts];
+    updatedWorkouts.splice(workoutIndex, 1);
+
+    await updateDoc(workoutSessionRef, {
+      workouts: updatedWorkouts,
+    });
   } catch (error) {
     throw error;
   }

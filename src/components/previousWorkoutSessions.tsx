@@ -23,9 +23,7 @@ export default function PreviousWorkoutSessions() {
           );
           setPreviousWorkoutSessions(result);
         }
-      } catch (error: any) {
-        console.log(error.code);
-      }
+      } catch (error: any) {}
     })();
   }, [currentWorkoutSession]);
 

@@ -134,7 +134,7 @@ export function convertFirestoreTimestampToString(
 
   const formattedDate = `${formattedHours}:${minutes
     .toString()
-    .padStart(2, "0")} ${period} - ${dayName}, ${day} ${
+    .padStart(2, "0")} ${period} ${dayName}, ${day} ${
     monthNames[monthIndex]
   } ${year}`;
 

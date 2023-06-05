@@ -250,7 +250,12 @@ export default function CurrentWorkoutSession() {
         >
           {groupedWorkouts &&
             Object.entries(groupedWorkouts).map(([key, value]) => (
-              <WorkoutsTable key={key} name={key} workouts={value} />
+              <WorkoutsTable
+                key={key}
+                name={key}
+                workouts={value}
+                deletableRow
+              />
             ))}
         </Box>
 
@@ -324,7 +329,7 @@ const EndSessionModal = (props: {
           onClick={handleEndSession}
           sx={{ textTransform: "none" }}
         >
-          End session
+          Save session
         </Button>
       </DialogActions>
     </Dialog>
