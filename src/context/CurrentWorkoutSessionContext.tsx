@@ -33,6 +33,8 @@ const CurrentWorkoutSessionProvider = (props: {
             await fetchCurrentWorkoutSessionQueryDocSnapshot(currentUser.uid);
           setCurrentWorkoutSession(workoutSessionQueryDocSnapshot);
           setIsLoading(false);
+        } else {
+          setIsLoading(false);
         }
       } catch (error: any) {
         setIsLoading(false);
