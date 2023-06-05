@@ -13,7 +13,7 @@ export default function PreviousWorkoutSessions() {
   const [previousWorkoutSessions, setPreviousWorkoutSessions] =
     useState<QueryDocumentSnapshot<WorkoutSession>[]>();
   useEffect(() => {
-    const fetchData = async () => {
+    (async () => {
       try {
         if (currentUser) {
           const count = 5;
@@ -23,11 +23,8 @@ export default function PreviousWorkoutSessions() {
           );
           setPreviousWorkoutSessions(result);
         }
-      } catch (error: any) {
-        console.error(error.code);
-      }
-    };
-    fetchData();
+      } catch (error: any) {}
+    })();
   }, [currentWorkoutSession]);
 
   return (
@@ -45,10 +42,13 @@ export default function PreviousWorkoutSessions() {
         Previous sessions
       </Typography>
       <Box>
-        {previousWorkoutSessions &&
+        {previousWorkoutSessions ? (
           previousWorkoutSessions.map((doc) => {
             return <WorkoutSessionSection doc={doc} key={doc.id} />;
-          })}
+          })
+        ) : (
+          <Typography> No sessions found</Typography>
+        )}
       </Box>
     </Box>
   );
