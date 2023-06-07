@@ -39,66 +39,91 @@ export default function HomePage() {
   };
 
   return (
-    <Box sx={{ padding: "1em" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+    <Box
+      sx={{
+        padding: "1em",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          maxWidth: "60em",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
-            gap: "0.5em",
-            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          {currentUser && currentUser.photoURL ? (
-            <Avatar src={currentUser.photoURL} />
-          ) : (
-            <Avatar />
-          )}
-          <Typography
+          <Box
             sx={{
-              background: "linear-gradient(to right, #007FFF, #0059B2)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              fontWeight: "bold",
+              display: "flex",
+              gap: "0.5em",
+              alignItems: "center",
             }}
           >
-            {currentUser?.displayName}
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Button
-            variant="contained"
-            sx={{ textTransform: "none", fontWeight: "bold" }}
-            onClick={handleLogout}
-          >
-            {" "}
-            Log out
-          </Button>
-          {errorMessage && (
-            <Typography color={red[500]} marginLeft={"1em"} fontSize={"medium"}>
-              {errorMessage}
+            {currentUser && currentUser.photoURL ? (
+              <Avatar src={currentUser.photoURL} />
+            ) : (
+              <Avatar />
+            )}
+            <Typography
+              sx={{
+                background: "linear-gradient(to right, #007FFF, #0059B2)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: "bold",
+              }}
+            >
+              {currentUser?.displayName}
             </Typography>
-          )}
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Button
+              variant="contained"
+              sx={{ textTransform: "none", fontWeight: "bold" }}
+              onClick={handleLogout}
+            >
+              {" "}
+              Log out
+            </Button>
+            {errorMessage && (
+              <Typography
+                color={red[500]}
+                marginLeft={"1em"}
+                fontSize={"medium"}
+              >
+                {errorMessage}
+              </Typography>
+            )}
+          </Box>
         </Box>
-      </Box>
 
-      {currentWorkoutSession ? (
-        <CurrentWorkoutSession />
-      ) : (
-        <Box marginTop={"1em"}>
-          <Button
-            variant="contained"
-            color="secondary"
-            sx={{ textTransform: "none", fontWeight: "bold" }}
-            onClick={handleCreateWorkoutSession}
-          >
-            Create a session
-          </Button>
-          <Typography marginTop={"0.5em"}>
-            Start your workout session and add your sets
-          </Typography>
-        </Box>
-      )}
-      <PreviousWorkoutSessions />
+        {currentWorkoutSession ? (
+          <CurrentWorkoutSession />
+        ) : (
+          <Box marginTop={"1em"}>
+            <Button
+              variant="contained"
+              color="secondary"
+              sx={{ textTransform: "none", fontWeight: "bold" }}
+              onClick={handleCreateWorkoutSession}
+            >
+              Create a session
+            </Button>
+            <Typography marginTop={"0.5em"}>
+              Start your workout session and add your sets
+            </Typography>
+          </Box>
+        )}
+        <PreviousWorkoutSessions />
+      </Box>
     </Box>
   );
 }

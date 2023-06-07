@@ -66,10 +66,9 @@ export default function WorkoutsTable(props: {
                 Reps
               </TableCell>
               {deletableRow && (
-                <TableCell
-                  align="center"
-                  sx={{ fontWeight: "bold" }}
-                ></TableCell>
+                <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                  Delete
+                </TableCell>
               )}
             </TableRow>
           </TableHead>
