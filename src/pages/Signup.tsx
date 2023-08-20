@@ -362,7 +362,8 @@ export default function SignUpPage() {
               src={GoogleIcon}
               alt="Google Icon"
               style={{
-                height: "30px",
+                height: "24px",
+                width: "24px",
                 marginRight: "1em",
               }}
             />{" "}
@@ -382,7 +383,8 @@ export default function SignUpPage() {
               src={FacebookIcon}
               alt="Facebook Icon"
               style={{
-                height: "30px",
+                height: "24px",
+                width: "24px",
                 marginRight: "1em",
               }}
             />{" "}
