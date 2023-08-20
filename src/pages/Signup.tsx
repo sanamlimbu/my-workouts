@@ -5,8 +5,6 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import GoogleIcon from "@mui/icons-material/Google";
 import {
   Box,
   Button,
@@ -25,6 +23,8 @@ import {
 import { useContext, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import FacebookIcon from "../assets/facebook.svg";
+import GoogleIcon from "../assets/google.svg";
 import { AuthContext } from "../context/AuthContext";
 import { auth, facebookProvider, googleProvider } from "../firebase";
 import { validatePassword } from "../utils/auth";
@@ -358,7 +358,15 @@ export default function SignUpPage() {
             }}
             onClick={() => registerWithGoogle()}
           >
-            <GoogleIcon sx={{ marginRight: "1em" }} /> Sign up with Google
+            <img
+              src={GoogleIcon}
+              alt="Google Icon"
+              style={{
+                height: "30px",
+                marginRight: "1em",
+              }}
+            />{" "}
+            Sign up with Google
           </Button>
           <Button
             variant="contained"
@@ -370,7 +378,15 @@ export default function SignUpPage() {
             }}
             onClick={() => registerWithFacebook()}
           >
-            <FacebookIcon sx={{ marginRight: "1em" }} /> Sign up with Facebook
+            <img
+              src={FacebookIcon}
+              alt="Facebook Icon"
+              style={{
+                height: "30px",
+                marginRight: "1em",
+              }}
+            />{" "}
+            Sign up with Facebook
           </Button>
           {socialSignUpErrorMessage && (
             <Typography color={red[500]} marginTop={"1em"} fontSize={"small"}>
